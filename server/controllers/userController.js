@@ -13,7 +13,7 @@ class UserController {
   async registration(req, res) {
     try {
       const { name, email, password } = req.body;
-      console.log(name, email, password)
+
       let user = await userModel.findOne({ email });
 
       if (user) {
@@ -62,10 +62,11 @@ class UserController {
   }
 
   async findUser(req, res) {
-    const userId = req.params.id;
+    const userId = req.params.userId;
+
     try {
       const user = await userModel.findById(userId);
-
+      delete user.password;
       res.status(200).json(user);
     } catch (e) {
       console.log(e.message);
@@ -75,7 +76,7 @@ class UserController {
 
   async getUsers(req, res) {
     try {
-      const users = await userModel.find();
+      const users = await userModel.find().select("-password");
 
       res.status(200).json(users);
     } catch (e) {

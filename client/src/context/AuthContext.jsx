@@ -1,5 +1,5 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-import { baseUrl, postRequest } from "../utils/service.js";
+import {baseUrl, postAuthRequest} from "../utils/service.js";
 import jwtDecode from "jwt-decode";
 
 export const AuthContext = createContext();
@@ -32,7 +32,7 @@ export const AuthContextProvider = ({ children }) => {
       e.preventDefault();
       setIsLoading(true);
       setRegistrationError(null);
-      const response = await postRequest(
+      const response = await postAuthRequest(
         `${baseUrl}/users/registration`,
         JSON.stringify(registerInfo)
       );
@@ -53,7 +53,7 @@ export const AuthContextProvider = ({ children }) => {
       e.preventDefault();
       setIsLoading(true);
       setLoginError(null);
-      const response = await postRequest(
+      const response = await postAuthRequest(
         `${baseUrl}/users/login`,
         JSON.stringify(loginInfo)
       );
