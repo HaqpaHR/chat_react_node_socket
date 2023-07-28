@@ -24,9 +24,9 @@ export const useFetchRecipientUser = (chat, user) => {
 
         getUser();
 
-    }, [])
+    }, [chat])
 
-    return {recipientUser}
+    return { recipientUser }
 }
 
 export const convertDateFromMongo = (date) => {

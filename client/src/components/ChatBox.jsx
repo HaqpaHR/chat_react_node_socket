@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
 import ChatContext from "../context/ChatContext.jsx";
 import {
@@ -6,11 +6,16 @@ import {
   useFetchRecipientUser,
 } from "../hooks/useFetchRecipient.jsx";
 import { Stack } from "react-bootstrap";
+import InputEmoji from "react-input-emoji";
+import SendIcon from "../assets/img/send.svg";
 
 const ChatBox = () => {
   const { user } = useContext(AuthContext);
-  const { messages, currentChat, isMessagesLoading } = useContext(ChatContext);
+  const { messages, currentChat, isMessagesLoading, sendTextMessage } = useContext(ChatContext);
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
+  const [textMessage, setTextMessage] = useState("");
+
+  console.log(textMessage);
 
   if (!recipientUser) {
     return (
@@ -51,6 +56,20 @@ const ChatBox = () => {
               </Stack>
             );
           })}
+      </Stack>
+      <Stack direction="horizontal" gap={3} className="chat-input flex-grow-0">
+        <InputEmoji
+          value={textMessage}
+          onChange={setTextMessage}
+          cleanOnEnter
+          placeholder="Type a message"
+          fontFamily="nunito"
+          borderColor="rgba(72, 112, 223, 0.2)"
+          onEnter={() => sendTextMessage(textMessage, user, currentChat._id, setTextMessage)}
+        />
+          <button className="send-btn" onClick={() => sendTextMessage(textMessage, user, currentChat._id, setTextMessage)}>
+              <img src={SendIcon}/>
+          </button>
       </Stack>
     </Stack>
   );

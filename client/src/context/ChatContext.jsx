@@ -12,6 +12,8 @@ export const ChatContextProvider = ({ children, user }) => {
   const [messages, setMessages] = useState(null);
   const [messagesError, setMessagesError] = useState(null);
   const [isMessagesLoading, setMessagesIsLoading] = useState(false);
+  const [sendMessageError, setSendMessageError] = useState(null);
+  const [newMessage, setNewMessage] = useState(null);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -65,7 +67,9 @@ export const ChatContextProvider = ({ children, user }) => {
       setMessagesIsLoading(true);
       setMessagesError(null);
 
-      const response = await getRequest(`${baseUrl}/messages/${currentChat?._id}`);
+      const response = await getRequest(
+        `${baseUrl}/messages/${currentChat?._id}`
+      );
 
       setMessagesIsLoading(false);
 
@@ -79,9 +83,35 @@ export const ChatContextProvider = ({ children, user }) => {
     getMessages();
   }, [currentChat]);
 
+  const sendTextMessage = useCallback(
+    async (textMessage, sender, currentChatId, setTextMessage) => {
+      if (!textMessage) {
+        return console.log("Write something!");
+      }
+
+      const response = await postRequest(
+        `${baseUrl}/messages`,
+        JSON.stringify({
+          chatId: currentChatId,
+          senderId: sender._id,
+          text: textMessage,
+        })
+      );
+        console.log(response)
+      if (response.error) {
+        return setMessagesError(response);
+      }
+
+      setNewMessage(response);
+      setMessages((prev) => [...prev, response]);
+      setTextMessage('');
+    },
+    []
+  );
+
   const updateChat = useCallback((chat) => {
     setCurrentChat(chat);
-  }, [])
+  }, []);
 
   const createChat = useCallback(async (firstId, secondId) => {
     const response = await postRequest(
@@ -108,7 +138,8 @@ export const ChatContextProvider = ({ children, user }) => {
         messages,
         isMessagesLoading,
         messagesError,
-        currentChat
+        currentChat,
+        sendTextMessage
       }}
     >
       {children}
