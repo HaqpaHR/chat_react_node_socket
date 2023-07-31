@@ -43,7 +43,7 @@ export const getRequest = async (url) => {
     }
     return { error: true, message };
   }
-  console.log(data)
+
   return data;
 };
 

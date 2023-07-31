@@ -15,7 +15,7 @@ const ChatBox = () => {
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
   const [textMessage, setTextMessage] = useState("");
 
-  console.log(textMessage);
+  console.log(user);
 
   if (!recipientUser) {
     return (
@@ -46,11 +46,12 @@ const ChatBox = () => {
               <Stack
                 key={message._id}
                 className={
-                  message?.senderId === user?._id
-                    ? "message self align-self-end flex-grow-0"
-                    : "message align-self-start flex-grow-0"
+                  message?.senderId === user?.id
+                    ? "message align-self-start flex-grow-0"
+                    : "message self align-self-end flex-grow-0"
                 }
               >
+
                 <span>{message.text}</span>
                 <span className="message-footer">{dateDays + " " + time}</span>
               </Stack>

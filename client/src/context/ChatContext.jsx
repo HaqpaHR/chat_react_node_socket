@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { baseUrl, getRequest, postRequest } from "../utils/service.js";
+import { io } from "socket.io-client";
 
 export const ChatContext = createContext();
 
@@ -14,6 +15,52 @@ export const ChatContextProvider = ({ children, user }) => {
   const [isMessagesLoading, setMessagesIsLoading] = useState(false);
   const [sendMessageError, setSendMessageError] = useState(null);
   const [newMessage, setNewMessage] = useState(null);
+  const [socket, setSocket] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+
+  console.log("messages", messages);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:3000");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (socket === null) return;
+    socket.emit("addNewUser", user?.id);
+    socket.on("getOnlineUsers", (res) => {
+      setOnlineUsers(res);
+    });
+    return () => {
+      socket.off("getOnlineUsers");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket === null) return;
+
+    const recipientId = currentChat?.members.find((id) => id !== user?.id);
+
+    socket.emit("sendMessage", { ...newMessage, recipientId });
+  }, [newMessage]);
+
+  useEffect(() => {
+    if (socket === null) return;
+
+    socket.on('getMessage', res => {
+      if (currentChat?._id !== res.chatId) return;
+
+      setMessages((prev) => [...prev, res])
+    })
+
+    return () => {
+      socket.off('getMessage')
+    }
+  }, [socket, currentChat]);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -76,6 +123,7 @@ export const ChatContextProvider = ({ children, user }) => {
       if (response.error) {
         return setMessagesError(response);
       }
+      console.log(response)
 
       setMessages(response);
     };
@@ -93,18 +141,18 @@ export const ChatContextProvider = ({ children, user }) => {
         `${baseUrl}/messages`,
         JSON.stringify({
           chatId: currentChatId,
-          senderId: sender._id,
+          senderId: sender.id,
           text: textMessage,
         })
       );
-        console.log(response)
+
       if (response.error) {
         return setMessagesError(response);
       }
 
       setNewMessage(response);
       setMessages((prev) => [...prev, response]);
-      setTextMessage('');
+      setTextMessage("");
     },
     []
   );
@@ -139,7 +187,8 @@ export const ChatContextProvider = ({ children, user }) => {
         isMessagesLoading,
         messagesError,
         currentChat,
-        sendTextMessage
+        sendTextMessage,
+        onlineUsers,
       }}
     >
       {children}
