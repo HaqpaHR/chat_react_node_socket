@@ -1,21 +1,25 @@
-import React, { useContext, useState } from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
 import ChatContext from "../context/ChatContext.jsx";
 import {
-  convertDateFromMongo,
   useFetchRecipientUser,
 } from "../hooks/useFetchRecipient.jsx";
 import { Stack } from "react-bootstrap";
 import InputEmoji from "react-input-emoji";
 import SendIcon from "../assets/img/send.svg";
+import {convertDateFromMongo} from "../utils/diffFunctions.js";
 
 const ChatBox = () => {
   const { user } = useContext(AuthContext);
   const { messages, currentChat, isMessagesLoading, sendTextMessage } = useContext(ChatContext);
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
   const [textMessage, setTextMessage] = useState("");
+  const scroll = useRef();
 
-  console.log(user);
+  useEffect(() => {
+      scroll.current?.scrollIntoView(false)
+
+  }, [messages])
 
   if (!recipientUser) {
     return (
@@ -30,8 +34,6 @@ const ChatBox = () => {
       <p style={{ textAlign: "center", width: "100%" }}>Loading Chat...</p>
     );
   }
-
-  convertDateFromMongo("2023-07-27T17:37:35.726Z");
 
   return (
     <Stack className="chat-box">
@@ -50,6 +52,7 @@ const ChatBox = () => {
                     ? "message align-self-start flex-grow-0"
                     : "message self align-self-end flex-grow-0"
                 }
+                ref={scroll}
               >
 
                 <span>{message.text}</span>

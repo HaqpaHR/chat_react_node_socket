@@ -28,10 +28,3 @@ export const useFetchRecipientUser = (chat, user) => {
 
     return { recipientUser }
 }
-
-export const convertDateFromMongo = (date) => {
-    let separateDate = date.split('T');
-    let dateDays = separateDate[0];
-    let time = separateDate[1].split('.')[0];
-    return {dateDays, time}
-}
