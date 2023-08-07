@@ -8,7 +8,7 @@ import ChatBox from "../components/ChatBox.jsx";
 
 const Chat = () => {
   const { user } = useContext(AuthContext);
-  const { userChats, isLoading, userChatsError, updateChat } = useContext(ChatContext);
+  const { userChats, isLoading, updateChat } = useContext(ChatContext);
 
   return (
     <Container>
