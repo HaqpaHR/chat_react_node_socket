@@ -1,0 +1,18 @@
+{
+  "name": "chat_node_socket_react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd client && npm start",
+    "server": "cd server && nodemon index.js",
+    "socket": "nodemon socket/index.js",
+    "dev": "concurrently \"npm run server\" \"npm run socket\" \"npm run client\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1"
+  }
+}

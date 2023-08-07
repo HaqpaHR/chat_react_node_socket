@@ -5,7 +5,7 @@ const io = new Server({ cors: { origin: "http://localhost:5173" } });
 let onlineUsers = [];
 
 io.on("connection", (socket) => {
-  console.log("new connection", socket.id);
+  // console.log("new connection", socket.id);
   socket.on("addNewUser", (userId) => {
     !onlineUsers.some((user) => user.userId === userId) &&
       onlineUsers.push({
